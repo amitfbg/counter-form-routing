@@ -1,0 +1,9 @@
+.form-data {
+  font-size: 2rem;
+  font-weight: 500;
+  width: 20rem;
+  margin: 1rem auto;
+}
+.form-data p {
+  margin: 1rem 0;
+}
