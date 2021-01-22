@@ -1,62 +1,93 @@
 import React, { useState, useEffect } from "react";
-import "./Counter.css";
+// import "./Counter.css";
 import { Button } from "@material-ui/core";
+import styled from "styled-components";
+
+const StyledCounter = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 3rem;
+  font-weight: bolder;
+`;
+
+const LeftPannel = styled.div`
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+const RightPannel = styled(LeftPannel)``;
+const CentralPannel = styled.div`
+  width: 40%;
+`;
+
+const Span = styled.span`
+  font-size: 4rem;
+  color: red;
+`;
+
+const CounterButton = styled(Button)`
+  && {
+    margin: 2rem;
+    color: white;
+    font-size: 3rem;
+  }
+`;
 
 function Counter() {
-  const [count1, setCount1] = useState(0);
-  const [count2, setCount2] = useState(0);
+  const [leftCount, setLeftCount] = useState(0);
+  const [rightCount, setRightCount] = useState(0);
   const [isleft, setIsleft] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
+
+  function CountChange() {
+    if (isleft) {
+      setLeftCount(rightCount + 1);
+    } else {
+      setRightCount(leftCount + 1);
+    }
+    setIsleft((isleft) => !isleft);
+  }
+
   useEffect(() => {
     if (isRunning) {
-      const interval = setInterval(() => {
-        if (isleft) {
-          setCount1(count2 + 1);
-          setIsleft((isleft) => !isleft);
-        } else {
-          setCount2(count1 + 1);
-          setIsleft((isleft) => !isleft);
-        }
-      }, 2000);
-
+      const interval = setInterval(CountChange, 2000);
       return () => clearInterval(interval);
     }
-  }, [isleft, isRunning]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRunning, isleft]);
 
   return (
-    <div className="counter">
-      <div className="left-pannel">
-        Counter: <span>{count1}</span>
-      </div>
-      <div className="centre-pannel">
+    <StyledCounter>
+      <LeftPannel>
+        Counter: <Span>{leftCount}</Span>
+      </LeftPannel>
+      <CentralPannel>
         {!isRunning ? (
-          <Button
+          <CounterButton
             variant="contained"
             color="primary"
-            size="large"
-            onClick={() => {
-              setIsRunning(true);
-            }}
+            onClick={() => setIsRunning(true)}
           >
             Start
-          </Button>
+          </CounterButton>
         ) : (
-          <Button
+          <CounterButton
             variant="contained"
-            size="large"
             color="secondary"
-            onClick={() => {
-              setIsRunning(false);
-            }}
+            onClick={() => setIsRunning(false)}
           >
             Stop
-          </Button>
+          </CounterButton>
         )}
-      </div>
-      <div className="right-pannel">
-        Counter: <span>{count2}</span>
-      </div>
-    </div>
+      </CentralPannel>
+      <RightPannel>
+        Counter: <Span>{rightCount}</Span>
+      </RightPannel>
+    </StyledCounter>
   );
 }
 

@@ -1,9 +1,12 @@
 .form-data {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  margin: auto;
+  text-align: left;
   font-size: 2rem;
   font-weight: 500;
-  width: 20rem;
-  margin: 1rem auto;
 }
 .form-data p {
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }

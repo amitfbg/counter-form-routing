@@ -4,7 +4,7 @@ import "./FormData.css";
 function FormData(props) {
   //   console.log(props.location.state);
   if (props.location.state) {
-    const { name, email, gender, department } = props.location.state;
+    const { name, email, gender, department } = props.location.state.formValue;
     return (
       <div className="form-data">
         <p>Name : {name}</p>

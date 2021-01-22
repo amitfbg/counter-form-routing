@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer } from "react";
 import Container from "@material-ui/core/Container";
 import {
   Grid,
@@ -8,35 +8,52 @@ import {
   Button,
   Radio,
   RadioGroup,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import "./Form.css";
+import formReducer from "../../reducers/formReducer";
+import * as actions from "../../actions/actionTypes";
+
+const initialFormState = {
+  name: "",
+  email: "",
+  password: "",
+  check: false,
+  error: "",
+  gender: "female",
+  department: "",
+};
 
 function Form(props) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [gender, setGender] = useState("female");
-  const [department, setDepartment] = useState("");
-  const [check, setCheck] = useState(false);
-  const [error, setError] = useState("");
+  const [formValue, dispatch] = useReducer(formReducer, initialFormState);
+
+  function handleInputChange(e) {
+    dispatch({
+      type: actions.Handle_Input_Change,
+      field: e.target.name,
+      payload: e.target.value,
+    });
+  }
+
+  const options = ["CSE", "IT", "ECE"];
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!check) {
-      setError("Please tick the box");
+    if (!formValue.check) {
+      dispatch({
+        type: actions.Handle_Input_Change,
+        field: "error",
+        payload: "Please tick the box",
+      });
     } else {
-      setError("");
-
+      dispatch({
+        type: actions.Handle_Input_Change,
+        field: "error",
+        payload: "",
+      });
+      console.log(formValue.department);
       props.history.push("/success", {
-        name,
-        email,
-        password,
-        gender,
-        department,
+        formValue,
       });
     }
   }
@@ -48,16 +65,16 @@ function Form(props) {
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
-              name="Name"
+              name="name"
               variant="outlined"
               required
               fullWidth
               id="Name"
               label="Name"
               placeholder="Enter Your Name"
-              value={name}
+              value={formValue.name}
               onChange={(e) => {
-                setName(e.target.value);
+                handleInputChange(e);
               }}
             />
           </Grid>
@@ -71,9 +88,9 @@ function Form(props) {
               label="Email Address"
               name="email"
               placeholder="Enter Your Email"
-              value={email}
+              value={formValue.email}
               onChange={(e) => {
-                setEmail(e.target.value);
+                handleInputChange(e);
               }}
             />
           </Grid>
@@ -87,18 +104,20 @@ function Form(props) {
               type="password"
               id="password"
               placeholder="Enter Your Password"
-              value={password}
+              value={formValue.password}
               onChange={(e) => {
-                setPassword(e.target.value);
+                handleInputChange(e);
               }}
             />
           </Grid>
           <Grid item xs={12}>
-            {/* <FormLabel>Gender</FormLabel> */}
             <RadioGroup
-              value={gender}
+              value={formValue.gender}
               onChange={(e) => {
-                setGender(e.target.value);
+                dispatch({
+                  type: actions.Handle_Radio_Change,
+                  payload: e.target.value,
+                });
               }}
             >
               <FormControlLabel
@@ -115,39 +134,41 @@ function Form(props) {
             </RadioGroup>
           </Grid>
           <Grid item xs={12}>
-            <FormControl required fullWidth variant="outlined">
-              <InputLabel>Department</InputLabel>
-              <Select
-                native
-                label="Department"
-                value={department}
-                onChange={(e) => {
-                  setDepartment(e.target.value);
-                }}
-              >
-                <option aria-label="None" value=""></option>
-                <option value={"CSE"}>CSE</option>
-                <option value={"IT"}>IT</option>
-                <option value={"ECE"}>ECE</option>
-              </Select>
-            </FormControl>
+            <Autocomplete
+              id="department"
+              onChange={(e, v) => {
+                dispatch({
+                  type: actions.Handle_Department_Change,
+                  payload: v,
+                });
+              }}
+              options={options}
+              fullWidth
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  required
+                  label="Department"
+                  variant="outlined"
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={check}
-                  onChange={(e) => {
-                    setCheck(e.target.checked);
+                  checked={formValue.check}
+                  onChange={() => {
+                    dispatch({ type: actions.Handle_Toggle_Change });
                   }}
-                  color="primary"
                 />
               }
               label="I have read all the terms and conditions."
             />
           </Grid>
         </Grid>
-        {error && <p>{error}</p>}
+        {formValue.error && <p>{formValue.error}</p>}
         <Button type="submit" fullWidth variant="contained" color="primary">
           Sign Up
         </Button>
